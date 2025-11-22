@@ -7,15 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Image as ImageIcon, ArrowLeft } from "lucide-react";
-import { useMutation } from "convex/react"; // <-- 1. Add this import
-import { api } from "../../convex/_generated/api"; // <-- 2. Add this import
+import { useMutation } from "convex/react"; 
+import { api } from "../../convex/_generated/api"; 
 
 type Question = {
   question_text: string;
   question_image_url: string;
-  // dynamic options stored in an array (min 2)
   options: string[];
-  correct_answer: string; // letter like 'A', 'B', ...
+  correct_answer: string; 
   time_limit: number;
   order_number: number;
 };
@@ -30,17 +29,15 @@ const CreateQuiz = () => {
     {
       question_text: "",
       question_image_url: "",
-      options: ["", ""], // start with two mandatory options
+      options: ["", ""], 
       correct_answer: "A",
       time_limit: 30,
       order_number: 0
     }
   ]);
 
-  // <-- 3. Get the mutation function
   const createQuizMutation = useMutation(api.quizzes.createQuiz);
 
-  // Time options (seconds) for the select
   const TIME_OPTIONS: { label: string; value: number }[] = [
     { label: "5 secs", value: 5 },
     { label: "10 secs", value: 10 },
@@ -95,7 +92,15 @@ const CreateQuiz = () => {
 
   const addOption = (qIndex: number) => {
     const updated = [...questions];
-    const opts = [...updated[qIndex].options, ""];
+    const opts = [...updated[qIndex].options];
+    
+    // FIX: Limit to 4 options (A, B, C, D) to match backend schema and prevent errors
+    if (opts.length >= 4) {
+      toast({ title: "Maximum Options", description: "You can add up to 4 options.", variant: "destructive" });
+      return;
+    }
+
+    opts.push("");
     updated[qIndex] = { ...updated[qIndex], options: opts };
     setQuestions(updated);
   };
@@ -139,10 +144,6 @@ const CreateQuiz = () => {
 
     setLoading(true);
     try {
-      // <-- 4. Call the mutation correctly
-      // Map dynamic options into the shape expected by the backend.
-      // Backend currently expects fields like option_a, option_b, option_c, option_d.
-      // We'll map the first N options to option_{letter} keys (option_a, option_b, ...)
       const mappedQuestions = questions.map((q) => {
         const mapped: any = {
           question_text: q.question_text,
@@ -167,7 +168,6 @@ const CreateQuiz = () => {
       });
 
       toast({ title: "Success!", description: "Quiz created successfully" });
-      // Navigate back to the dashboard so the user sees their updated quiz list
       navigate("/dashboard");
 
     } catch (error: any) {
@@ -294,7 +294,12 @@ const CreateQuiz = () => {
                     })}
 
                     <div className="pt-2">
-                      <Button onClick={() => addOption(index)} size="sm" className="rounded-full">
+                      <Button 
+                        onClick={() => addOption(index)} 
+                        size="sm" 
+                        className="rounded-full"
+                        disabled={question.options.length >= 4} // Disable adding more than 4 options
+                      >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Option
                       </Button>
