@@ -92,7 +92,7 @@ const QuizDetails = () => {
           Back to Home
         </Button>
 
-        <Card className="flex flex-row justify-between items-center px-6 py-3 mb-6">
+        <Card className="flex flex-col lg:flex-row justify-between items-betwwun px-4 py-3 mb-6">
           <div>
           <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             {quiz?.title}
@@ -119,7 +119,7 @@ const QuizDetails = () => {
               onClick={copyQuizLink}
               size="sm"
               variant="outline"
-              className="hover:bg-gradient-to-r from-primary to-secondary px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base md:px-5 md:py-3 md:text-md rounded-lg"
+              className="hover:bg-gradient-to-r from-primary to-secondary px-2 py-2 text-sm sm:px-4 sm:py-2 sm:text-base md:px-5 md:py-3 md:text-md rounded-lg"
             >
               {copied ? (
                 <>
